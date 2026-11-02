@@ -1,0 +1,53 @@
+$ mkvextract work/lighthouse.mkv tracks \
+    0:work/extracted/video.h264 \
+    1:work/extracted/soundtrack.aac \
+    3:work/extracted/subs.srt
+Extracting track 0 with the CodecID 'V_MPEG4/ISO/AVC' to the file 'work/extracted/video.h264'. Container format: AVC/H.264 elementary stream
+Extracting track 1 with the CodecID 'A_AAC' to the file 'work/extracted/soundtrack.aac'. Container format: raw AAC file with ADTS headers
+Extracting track 3 with the CodecID 'S_TEXT/UTF8' to the file 'work/extracted/subs.srt'. Container format: SRT text subtitles
+Progress: 21%Progress: 41%Progress: 62%Progress: 82%Progress: 99%Progress: 100%
+exit: 0
+
+$ ls -la work/extracted/
+total 388
+drwxrwx--- 1 root root     64 Nov  2 15:23 .
+drwxrwx--- 1 root root    108 Nov  2 15:23 ..
+-rw-rw---- 1 root root 107659 Nov  2 15:23 soundtrack.aac
+-rw-rw---- 1 root root    246 Nov  2 15:23 subs.srt
+-rw-rw---- 1 root root 278990 Nov  2 15:23 video.h264
+
+# The subtitle track comes back out as a working SRT file:
+$ diff fixtures/sample-subs.srt work/extracted/subs.srt && echo "identical to the file that went in"
+1c1
+< 1
+---
+> ﻿1
+11a12
+> 
+
+# The audio comes back as raw AAC (ADTS) -- the same sound,
+# no longer wrapped in any container:
+$ ffprobe -hide_banner work/extracted/soundtrack.aac
+  Duration: 00:00:11.89, bitrate: 72 kb/s
+  Stream #0:0: Audio: aac (LC), 44100 Hz, mono, fltp, 72 kb/s
+
+# And the video as a raw H.264 stream; count its frames.
+# The fixture was 12 s at 10 frames per second = 120 frames.
+$ ffprobe -v error -count_frames -show_entries stream=codec_name,width,height,nb_read_frames -of default work/extracted/video.h264
+codec_name=h264
+width=320
+height=240
+nb_read_frames=120
+
+# Two cosmetic differences only. The first bytes of the
+# extracted file are 357 273 277 -- a UTF-8 byte order
+# mark mkvextract puts at the front of text extractions:
+$ head -c 16 work/extracted/subs.srt | od -c | head -2
+0000000 357 273 277   1  \n   0   0   :   0   0   :   0   0   ,   5   0
+0000020
+
+# And apart from a trailing blank line, every cue matches:
+$ grep -c "lighthouse\|harbour\|fog" fixtures/sample-subs.srt work/extracted/subs.srt
+fixtures/sample-subs.srt:3
+work/extracted/subs.srt:3
+# (3 cues in, 3 cues out -- the text and timings survived.)

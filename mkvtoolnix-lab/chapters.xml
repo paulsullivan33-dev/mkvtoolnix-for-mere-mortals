@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Chapters SYSTEM "matroskachapters.dtd">
+<!-- Chapter marks for the guide's invented sample film.
+     Three chapters over its twelve seconds. -->
+<Chapters>
+  <EditionEntry>
+    <EditionFlagDefault>1</EditionFlagDefault>
+    <ChapterAtom>
+      <ChapterTimeStart>00:00:00.000</ChapterTimeStart>
+      <ChapterTimeEnd>00:00:04.000</ChapterTimeEnd>
+      <ChapterDisplay>
+        <ChapterString>Opening titles</ChapterString>
+        <ChapterLanguage>eng</ChapterLanguage>
+      </ChapterDisplay>
+    </ChapterAtom>
+    <ChapterAtom>
+      <ChapterTimeStart>00:00:04.000</ChapterTimeStart>
+      <ChapterTimeEnd>00:00:08.000</ChapterTimeEnd>
+      <ChapterDisplay>
+        <ChapterString>The harbour at dawn</ChapterString>
+        <ChapterLanguage>eng</ChapterLanguage>
+      </ChapterDisplay>
+    </ChapterAtom>
+    <ChapterAtom>
+      <ChapterTimeStart>00:00:08.000</ChapterTimeStart>
+      <ChapterDisplay>
+        <ChapterString>The forecast</ChapterString>
+        <ChapterLanguage>eng</ChapterLanguage>
+      </ChapterDisplay>
+    </ChapterAtom>
+  </EditionEntry>
+</Chapters>

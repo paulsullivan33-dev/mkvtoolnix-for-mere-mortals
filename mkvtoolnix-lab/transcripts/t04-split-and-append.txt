@@ -1,0 +1,128 @@
+$ mkvmerge -o work/parts/scene.mkv --split duration:00:00:05 work/lighthouse.mkv
+mkvmerge v82.0 ('I'm The President') 64-bit
+'work/lighthouse.mkv': Using the demultiplexer for the format 'Matroska'.
+'work/lighthouse.mkv' track 0: Using the output module for the format 'AVC/H.264'.
+'work/lighthouse.mkv' track 1: Using the output module for the format 'AAC'.
+'work/lighthouse.mkv' track 2: Using the output module for the format 'AAC'.
+'work/lighthouse.mkv' track 3: Using the output module for the format 'text subtitles'.
+The file 'work/parts/scene-001.mkv' has been opened for writing.
+Progress: 19%The cue entries (the index) are being written...
+Timestamp used in split decision: 00:00:05.000000000
+The file 'work/parts/scene-002.mkv' has been opened for writing.
+The cue entries (the index) are being written...
+Timestamp used in split decision: 00:00:10.000000000
+The file 'work/parts/scene-003.mkv' has been opened for writing.
+Progress: 100%The cue entries (the index) are being written...
+Multiplexing took 0 seconds.
+exit: 0
+
+$ ls -la work/parts/
+total 508
+drwxrwx--- 1 root root     78 Nov  2 15:22 .
+drwxrwx--- 1 root root     66 Nov  2 15:22 ..
+-rw-rw---- 1 root root 209649 Nov  2 15:22 scene-001.mkv
+-rw-rw---- 1 root root 212294 Nov  2 15:22 scene-002.mkv
+-rw-rw---- 1 root root  90501 Nov  2 15:22 scene-003.mkv
+
+# Splits land on keyframes, so the parts are near 5 s, not exact:
+$ for f in work/parts/*.mkv; do echo "$f: $(ffprobe -v error -show_entries format=duration -of csv=p=0 $f) s"; done
+work/parts/scene-001.mkv: 7.500000 s
+work/parts/scene-002.mkv: 6.500000 s
+work/parts/scene-003.mkv: 2.027000 s
+
+# Splitting by size instead -- the same film in 200 KB pieces:
+$ mkvmerge -o work/sized/chunk.mkv --split size:200k work/lighthouse.mkv
+mkvmerge v82.0 ('I'm The President') 64-bit
+'work/lighthouse.mkv': Using the demultiplexer for the format 'Matroska'.
+'work/lighthouse.mkv' track 0: Using the output module for the format 'AVC/H.264'.
+'work/lighthouse.mkv' track 1: Using the output module for the format 'AAC'.
+'work/lighthouse.mkv' track 2: Using the output module for the format 'AAC'.
+'work/lighthouse.mkv' track 3: Using the output module for the format 'text subtitles'.
+The file 'work/sized/chunk-001.mkv' has been opened for writing.
+Progress: 19%The cue entries (the index) are being written...
+Timestamp used in split decision: 00:00:05.000000000
+The file 'work/sized/chunk-002.mkv' has been opened for writing.
+The cue entries (the index) are being written...
+Timestamp used in split decision: 00:00:10.000000000
+The file 'work/sized/chunk-003.mkv' has been opened for writing.
+Progress: 100%The cue entries (the index) are being written...
+Multiplexing took 0 seconds.
+exit: 0
+$ ls work/sized/
+chunk-001.mkv
+chunk-002.mkv
+chunk-003.mkv
+
+# Joining up: the + between files means "append in time".
+# Each later file must have the same tracks and codecs.
+$ mkvmerge -o work/rejoined.mkv work/parts/scene-001.mkv + work/parts/scene-002.mkv + work/parts/scene-003.mkv
+mkvmerge v82.0 ('I'm The President') 64-bit
+'work/parts/scene-001.mkv': Using the demultiplexer for the format 'Matroska'.
+'work/parts/scene-002.mkv': Using the demultiplexer for the format 'Matroska'.
+'work/parts/scene-003.mkv': Using the demultiplexer for the format 'Matroska'.
+'work/parts/scene-001.mkv' track 0: Using the output module for the format 'AVC/H.264'.
+'work/parts/scene-001.mkv' track 1: Using the output module for the format 'AAC'.
+'work/parts/scene-001.mkv' track 2: Using the output module for the format 'AAC'.
+'work/parts/scene-001.mkv' track 3: Using the output module for the format 'text subtitles'.
+'work/parts/scene-002.mkv' track 0: Using the output module for the format 'AVC/H.264'.
+'work/parts/scene-002.mkv' track 1: Using the output module for the format 'AAC'.
+'work/parts/scene-002.mkv' track 2: Using the output module for the format 'AAC'.
+'work/parts/scene-002.mkv' track 3: Using the output module for the format 'text subtitles'.
+'work/parts/scene-003.mkv' track 0: Using the output module for the format 'AVC/H.264'.
+'work/parts/scene-003.mkv' track 1: Using the output module for the format 'AAC'.
+'work/parts/scene-003.mkv' track 2: Using the output module for the format 'AAC'.
+'work/parts/scene-003.mkv' track 3: Using the output module for the format 'text subtitles'.
+No append mapping was given for the file no. 1 ('work/parts/scene-002.mkv'). A default mapping of 1:0:0:0,1:1:0:1,1:2:0:2,1:3:0:3 will be used instead. Please keep that in mind if mkvmerge aborts with an error message regarding invalid '--append-to' options.
+No append mapping was given for the file no. 2 ('work/parts/scene-003.mkv'). A default mapping of 2:0:1:0,2:1:1:1,2:2:1:2,2:3:1:3 will be used instead. Please keep that in mind if mkvmerge aborts with an error message regarding invalid '--append-to' options.
+The file 'work/rejoined.mkv' has been opened for writing.
+Progress: 19%Appending track 3 from file no. 1 ('work/parts/scene-002.mkv') to track 3 from file no. 0 ('work/parts/scene-001.mkv').
+Appending track 0 from file no. 1 ('work/parts/scene-002.mkv') to track 0 from file no. 0 ('work/parts/scene-001.mkv').
+Appending track 1 from file no. 1 ('work/parts/scene-002.mkv') to track 1 from file no. 0 ('work/parts/scene-001.mkv').
+Appending track 2 from file no. 1 ('work/parts/scene-002.mkv') to track 2 from file no. 0 ('work/parts/scene-001.mkv').
+Appending track 3 from file no. 2 ('work/parts/scene-003.mkv') to track 3 from file no. 1 ('work/parts/scene-002.mkv').
+Appending track 0 from file no. 2 ('work/parts/scene-003.mkv') to track 0 from file no. 1 ('work/parts/scene-002.mkv').
+Appending track 1 from file no. 2 ('work/parts/scene-003.mkv') to track 1 from file no. 1 ('work/parts/scene-002.mkv').
+Appending track 2 from file no. 2 ('work/parts/scene-003.mkv') to track 2 from file no. 1 ('work/parts/scene-002.mkv').
+Progress: 100%The cue entries (the index) are being written...
+Multiplexing took 0 seconds.
+exit: 0
+
+$ python3 track-table.py work/rejoined.mkv
+container: Matroska | title: The Lighthouse at Gull Rock
+id 0 | video | AVC/H.264/MPEG-4p10 | lang: und | default: True | forced: False | name: Picture (test pattern)
+id 1 | audio | AAC | lang: eng | default: True | forced: False | name: Soundtrack (440 Hz tone)
+id 2 | audio | AAC | lang: eng | default: True | forced: False | name: Commentary (220 Hz tone)
+id 3 | subtitles | SubRip/SRT | lang: eng | default: True | forced: False | name: Subtitles
+$ ffprobe -hide_banner work/rejoined.mkv 2>&1 | grep Duration
+  Duration: 00:00:16.03, start: 0.000000, bitrate: 248 kb/s
+# Compare: the original work/lighthouse.mkv also lasts 12.03 s.
+
+# Why 16.03 s? Look at which stream sets each part's length:
+$ for f in work/parts/*.mkv; do echo "== $f"; ffprobe -v error -show_entries stream=codec_type,duration -of csv=p=0 "$f"; done
+== work/parts/scene-001.mkv
+video,N/A
+audio,N/A
+audio,N/A
+subtitle,7.500000
+== work/parts/scene-002.mkv
+video,N/A
+audio,N/A
+audio,N/A
+subtitle,6.500000
+== work/parts/scene-003.mkv
+video,N/A
+audio,N/A
+audio,N/A
+subtitle,2.027000
+
+# The subtitle track is the long pole. In the source file,
+# cue 2 runs 00:04.5 --> 00:07.5 and cue 3 runs 00:08.5 -->
+# 00:11.5. A cue that starts before a split point is written
+# whole into the earlier part, so part 1 honestly lasts
+# 7.5 s and part 2 starts at its own zero but runs to the
+# end of cue 3 -- 6.5 s of declared length. When the parts
+# are appended, mkvmerge offsets each file by the declared
+# duration of the ones before it: 7.5 + 6.5 + 2.03 = 16.03 s.
+# The picture and sound are all present; the joins carry
+# the extra time. Split parts are for sending and storing,
+# not puzzle pieces that rebuild the original exactly.

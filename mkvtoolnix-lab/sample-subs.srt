@@ -1,0 +1,11 @@
+1
+00:00:00,500 --> 00:00:03,500
+The lighthouse keeper climbs the tower at dawn.
+
+2
+00:00:04,500 --> 00:00:07,500
+Below, the harbour is waking up, boat by boat.
+
+3
+00:00:08,500 --> 00:00:11,500
+By noon the fog will be gone, says the forecast.

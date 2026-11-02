@@ -1,0 +1,27 @@
+site_name: MKVToolNix for Mere Mortals
+site_description: The Matroska toolbox for media files you already have. Merging video, sound and subtitles into one MKV without re-encoding, fixing titles and track flags in place, splitting and joining files, adding chapters, tags and attachments, and pulling tracks back out again, with every claim checked against the real tools.
+site_url: https://paulsullivan33-dev.github.io/mkvtoolnix-for-mere-mortals/
+copyright: 'Part of <a href="https://paulsullivan33-dev.github.io/mere-mortals/">For Mere Mortals</a> · Text <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, code MIT'
+
+# Guides live at the repo root (nice for GitHub browsing).
+# The deploy workflow copies them into docs/ before building.
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - What MKVToolNix Is: what-mkvtoolnix-is.md
+  - The Moving Parts: the-moving-parts.md
+  - Installing MKVToolNix: installing-mkvtoolnix.md
+  - Your First Merge: your-first-merge.md
+  - Reading an MKV: reading-an-mkv.md
+  - Fixing the Labels: fixing-the-labels.md
+  - Splitting and Joining: splitting-and-joining.md
+  - Extracting Tracks: extracting-tracks.md
+  - Chapters, Tags and Attachments: chapters-tags-and-attachments.md
+  - Recipes: recipes.md
+  - The Neighbours: the-neighbours.md
+  - Limits: limits.md
+  - Troubleshooting: troubleshooting.md
+  - Glossary: glossary.md
+  - Writing Criteria: criteria.md

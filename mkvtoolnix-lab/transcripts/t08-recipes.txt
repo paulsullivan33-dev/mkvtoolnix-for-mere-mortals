@@ -1,0 +1,23 @@
+# Recipe A: add a second subtitle track to the finished film.
+# The existing MKV is just another input file to mkvmerge.
+$ mkvmerge -o work/with-largeprint.mkv work/finished.mkv \
+    --track-name 0:"Subtitles (large print)" --language 0:eng \
+    fixtures/sample-subs-largeprint.srt
+exit: 0
+$ python3 track-table.py work/with-largeprint.mkv
+container: Matroska | title: The Lighthouse at Gull Rock
+id 0 | video | AVC/H.264/MPEG-4p10 | lang: und | default: True | forced: False | name: Picture (test pattern)
+id 1 | audio | AAC | lang: eng | default: True | forced: False | name: Soundtrack (440 Hz tone)
+id 2 | audio | AAC | lang: eng | default: True | forced: False | name: Commentary (220 Hz tone)
+id 3 | subtitles | SubRip/SRT | lang: eng | default: True | forced: False | name: Subtitles
+id 4 | subtitles | SubRip/SRT | lang: eng | default: True | forced: False | name: Subtitles (large print)
+
+# Recipe B: the same film without the commentary track.
+# Track selection options say which of a file's tracks to take:
+$ mkvmerge -o work/no-commentary.mkv --audio-tracks 1 work/finished.mkv
+exit: 0
+$ python3 track-table.py work/no-commentary.mkv
+container: Matroska | title: The Lighthouse at Gull Rock
+id 0 | video | AVC/H.264/MPEG-4p10 | lang: und | default: True | forced: False | name: Picture (test pattern)
+id 1 | audio | AAC | lang: eng | default: True | forced: False | name: Soundtrack (440 Hz tone)
+id 2 | subtitles | SubRip/SRT | lang: eng | default: True | forced: False | name: Subtitles

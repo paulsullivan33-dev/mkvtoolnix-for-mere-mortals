@@ -1,0 +1,48 @@
+$ mkvmerge --version
+mkvmerge v82.0 ('I'm The President') 64-bit
+
+$ mkvinfo --version
+mkvinfo v82.0 ('I'm The President') 64-bit
+
+$ mkvpropedit --version
+mkvpropedit v82.0 ('I'm The President') 64-bit
+
+$ mkvextract --version
+mkvextract v82.0 ('I'm The President') 64-bit
+
+$ dpkg-query -W mkvtoolnix   (the Debian/Ubuntu package)
+mkvtoolnix	82.0-1build2
+
+$ ffmpeg -version | head -1
+ffmpeg version 8.1.2 Copyright (c) 2000-2026 the FFmpeg developers
+
+$ ./make-fixtures.sh   (synthetic media: pattern, tones, poster, subtitles)
+fixtures ready in ./fixtures/
+
+$ ls -la fixtures/
+total 500
+drwxrwx--- 1 root root    124 Nov  2 15:22 .
+drwxrwx--- 1 root root    194 Nov  2 15:22 ..
+-rw-rw---- 1 root root 106945 Nov  2 15:22 commentary.m4a
+-rw-rw---- 1 root root    210 Nov  2 15:22 poster.png
+-rw-rw---- 1 root root    242 Nov  2 15:22 sample-subs.srt
+-rw-rw---- 1 root root 106912 Nov  2 15:22 soundtrack.m4a
+-rw-rw---- 1 root root 281130 Nov  2 15:22 video.mp4
+
+$ ffprobe -hide_banner fixtures/video.mp4
+  Duration: 00:00:12.00, start: 0.000000, bitrate: 187 kb/s
+  Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(progressive), 320x240 [SAR 1:1 DAR 4:3], 185 kb/s, 10 fps, 10 tbr, 10240 tbn (default)
+
+$ ffprobe -hide_banner fixtures/soundtrack.m4a
+  Duration: 00:00:12.00, start: 0.000000, bitrate: 71 kb/s
+  Stream #0:0[0x1](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, mono, fltp, 69 kb/s (default)
+
+$ ffprobe -hide_banner fixtures/commentary.m4a
+  Duration: 00:00:12.00, start: 0.000000, bitrate: 71 kb/s
+  Stream #0:0[0x1](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, mono, fltp, 69 kb/s (default)
+
+$ file fixtures/poster.png; head -3 fixtures/sample-subs.srt
+fixtures/poster.png: PNG image data, 64 x 96, 8-bit/color RGB, non-interlaced
+1
+00:00:00,500 --> 00:00:03,500
+The lighthouse keeper climbs the tower at dawn.

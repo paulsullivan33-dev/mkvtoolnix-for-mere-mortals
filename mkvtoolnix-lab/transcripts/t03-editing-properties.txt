@@ -1,0 +1,52 @@
+$ cp work/lighthouse.mkv work/fixed.mkv
+
+$ python3 track-table.py work/fixed.mkv    (the starting point)
+container: Matroska | title: The Lighthouse at Gull Rock
+id 0 | video | AVC/H.264/MPEG-4p10 | lang: und | default: True | forced: False | name: Picture (test pattern)
+id 1 | audio | AAC | lang: eng | default: True | forced: False | name: Soundtrack (440 Hz tone)
+id 2 | audio | AAC | lang: eng | default: True | forced: False | name: Commentary (220 Hz tone)
+id 3 | subtitles | SubRip/SRT | lang: eng | default: True | forced: False | name: Subtitles
+
+# Every track claims to be "default" -- each source file had
+# only one track, and mkvmerge kept each file's own default
+# flag. A player may start this film with the commentary
+# playing and the subtitles on. Fix it in place:
+
+$ mkvpropedit work/fixed.mkv \
+    --edit info --set "title=The Lighthouse at Gull Rock (evening cut)" \
+    --edit track:v1 --set language=eng \
+    --edit track:a2 --set flag-default=0 \
+    --edit track:a2 --set "name=Commentary (220 Hz tone, alternate take)" \
+    --edit track:s1 --set flag-default=0
+The file is being analyzed.
+The changes are written to the file.
+Done.
+exit: 0
+
+$ python3 track-table.py work/fixed.mkv    (after the edit)
+container: Matroska | title: The Lighthouse at Gull Rock (evening cut)
+id 0 | video | AVC/H.264/MPEG-4p10 | lang: eng | default: True | forced: False | name: Picture (test pattern)
+id 1 | audio | AAC | lang: eng | default: True | forced: False | name: Soundtrack (440 Hz tone)
+id 2 | audio | AAC | lang: eng | default: False | forced: False | name: Commentary (220 Hz tone, alternate take)
+id 3 | subtitles | SubRip/SRT | lang: eng | default: False | forced: False | name: Subtitles
+
+# The media itself is untouched -- same streams, same length:
+$ ffprobe -hide_banner work/fixed.mkv 2>&1 | grep -E "Duration|title"
+    title           : The Lighthouse at Gull Rock (evening cut)
+  Duration: 00:00:12.03, start: 0.000000, bitrate: 331 kb/s
+      title           : Picture (test pattern)
+      title           : Soundtrack (440 Hz tone)
+      title           : Commentary (220 Hz tone, alternate take)
+  Stream #0:3(eng): Subtitle: subrip (srt)
+      title           : Subtitles
+
+# A second, separate edit: mark the subtitle track forced.
+# Players show forced subtitles even when subtitles are "off"
+# (the classic case is a few foreign-language lines in a film).
+$ mkvpropedit work/fixed.mkv --edit track:s1 --set flag-forced=1
+The file is being analyzed.
+The changes are written to the file.
+Done.
+
+$ python3 track-table.py work/fixed.mkv | tail -1
+id 3 | subtitles | SubRip/SRT | lang: eng | default: False | forced: True | name: Subtitles

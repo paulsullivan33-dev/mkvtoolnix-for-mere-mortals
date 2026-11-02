@@ -1,0 +1,130 @@
+# First, a look at the tags that arrived uninvited. The plain
+# merge in t01 already carried 3 global tag entries -- they
+# came from the source files' own metadata:
+$ mkvextract work/lighthouse.mkv tags work/extracted/inherited-tags.xml && grep -A1 "<Name>" work/extracted/inherited-tags.xml | grep "<String>\|<Name>"
+      <Name>ENCODER</Name>
+      <String>Lavf62.12.102</String>
+      <Name>ENCODER</Name>
+      <String>Lavf62.12.102</String>
+      <Name>ENCODER</Name>
+      <String>Lavf62.12.102</String>
+      <Name>BPS</Name>
+      <String>185967</String>
+      <Name>DURATION</Name>
+      <String>00:00:12.000000000</String>
+      <Name>NUMBER_OF_FRAMES</Name>
+      <String>120</String>
+      <Name>NUMBER_OF_BYTES</Name>
+      <String>278951</String>
+      <Name>_STATISTICS_WRITING_APP</Name>
+      <String>mkvmerge v82.0 ('I'm The President') 64-bit</String>
+      <Name>_STATISTICS_WRITING_DATE_UTC</Name>
+      <String>2026-11-02 15:22:25</String>
+      <Name>_STATISTICS_TAGS</Name>
+      <String>BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES</String>
+      <Name>BPS</Name>
+      <String>69193</String>
+      <Name>DURATION</Name>
+      <String>00:00:12.028000000</String>
+      <Name>NUMBER_OF_FRAMES</Name>
+      <String>518</String>
+      <Name>NUMBER_OF_BYTES</Name>
+      <String>104033</String>
+      <Name>_STATISTICS_WRITING_APP</Name>
+      <String>mkvmerge v82.0 ('I'm The President') 64-bit</String>
+      <Name>_STATISTICS_WRITING_DATE_UTC</Name>
+      <String>2026-11-02 15:22:25</String>
+      <Name>_STATISTICS_TAGS</Name>
+      <String>BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES</String>
+      <Name>BPS</Name>
+      <String>69215</String>
+      <Name>DURATION</Name>
+      <String>00:00:12.028000000</String>
+      <Name>NUMBER_OF_FRAMES</Name>
+      <String>518</String>
+      <Name>NUMBER_OF_BYTES</Name>
+      <String>104066</String>
+      <Name>_STATISTICS_WRITING_APP</Name>
+      <String>mkvmerge v82.0 ('I'm The President') 64-bit</String>
+      <Name>_STATISTICS_WRITING_DATE_UTC</Name>
+      <String>2026-11-02 15:22:25</String>
+      <Name>_STATISTICS_TAGS</Name>
+      <String>BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES</String>
+      <Name>BPS</Name>
+      <String>102</String>
+      <Name>DURATION</Name>
+      <String>00:00:11.000000000</String>
+      <Name>NUMBER_OF_FRAMES</Name>
+      <String>3</String>
+      <Name>NUMBER_OF_BYTES</Name>
+      <String>141</String>
+      <Name>_STATISTICS_WRITING_APP</Name>
+      <String>mkvmerge v82.0 ('I'm The President') 64-bit</String>
+      <Name>_STATISTICS_WRITING_DATE_UTC</Name>
+      <String>2026-11-02 15:22:25</String>
+      <Name>_STATISTICS_TAGS</Name>
+      <String>BPS DURATION NUMBER_OF_FRAMES NUMBER_OF_BYTES</String>
+
+$ cp work/lighthouse.mkv work/finished.mkv
+
+$ mkvpropedit work/finished.mkv --chapters chapters.xml
+The file is being analyzed.
+The changes are written to the file.
+Done.
+exit: 0
+
+$ mkvpropedit work/finished.mkv --tags global:tags.xml
+The file is being analyzed.
+The changes are written to the file.
+Done.
+exit: 0
+
+$ mkvpropedit work/finished.mkv \
+    --attachment-name "Poster (sample)" \
+    --attachment-description "A flat blue rectangle, 64 by 96" \
+    --add-attachment fixtures/poster.png
+The file is being analyzed.
+The changes are written to the file.
+Done.
+exit: 0
+
+$ mkvmerge --identify work/finished.mkv
+File 'work/finished.mkv': container: Matroska
+Track ID 0: video (AVC/H.264/MPEG-4p10)
+Track ID 1: audio (AAC)
+Track ID 2: audio (AAC)
+Track ID 3: subtitles (SubRip/SRT)
+Attachment ID 1: type 'image/png', size 210 bytes, description 'A flat blue rectangle, 64 by 96', file name 'Poster (sample)'
+Chapters: 3 entries
+Global tags: 4 entries
+
+$ mkvmerge -J work/finished.mkv | python3 -c "print chapters + attachments"
+chapters: 1 | attachments: [('Poster (sample)', 'image/png', 210)]
+
+# (The "chapters: 1" above counts chapter editions -- our
+# one edition holds the three chapter marks.) Now take the
+# three additions back out and check them:
+
+$ mkvextract work/finished.mkv chapters work/extracted/chapters-out.xml
+$ grep -E "ChapterTimeStart|ChapterString" work/extracted/chapters-out.xml
+      <ChapterTimeStart>00:00:00.000000000</ChapterTimeStart>
+        <ChapterString>Opening titles</ChapterString>
+      <ChapterTimeStart>00:00:04.000000000</ChapterTimeStart>
+        <ChapterString>The harbour at dawn</ChapterString>
+      <ChapterTimeStart>00:00:08.000000000</ChapterTimeStart>
+        <ChapterString>The forecast</ChapterString>
+
+$ mkvextract work/finished.mkv tags work/extracted/finished-tags.xml
+$ grep -B0 -A1 "<Name>TITLE\|<Name>DIRECTOR\|<Name>DATE_RELEASED" work/extracted/finished-tags.xml | grep "Name>\|String>"
+      <Name>TITLE</Name>
+      <String>The Lighthouse at Gull Rock</String>
+      <Name>DIRECTOR</Name>
+      <String>A. Sample</String>
+      <Name>DATE_RELEASED</Name>
+      <String>2026</String>
+
+$ mkvextract work/finished.mkv attachments 1:work/extracted/poster-out.png
+The attachment #1, ID 7836141374874879783, MIME type image/png, size 210, is written to 'work/extracted/poster-out.png'.
+$ md5sum fixtures/poster.png work/extracted/poster-out.png
+df6ab3a30f9010413629e3e9b09f1753  fixtures/poster.png
+df6ab3a30f9010413629e3e9b09f1753  work/extracted/poster-out.png
